@@ -1,0 +1,15 @@
+{
+    "appId": "com.intern-two.protoype-dev",
+    "files": ["src", "dist-react"],
+    "icon": "./prototype-dev.jpg",
+    "mac": {
+        "target": "dmg"
+    },
+    "linux": {
+        "target": "AppImage",
+        "category": "Utility"
+    },
+    "win": {
+        "target": ["portable", "msi"]
+    }
+}
