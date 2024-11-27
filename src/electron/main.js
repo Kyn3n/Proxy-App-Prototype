@@ -98,7 +98,9 @@ app.whenReady().then(() => {
 
 
 app.on('window-all-closed', () => {
+  checkOutbounds(true)
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
+
