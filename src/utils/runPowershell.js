@@ -64,7 +64,6 @@ function startProxySettings(){
 
     ps.stdin.end();
 
-
 }
 
 function stopProxySettings(){

@@ -42,22 +42,7 @@ const configTemplate = {
       }
     }
   ],
-  outbounds: [
-    {
-      tag: "direct",
-      protocol: "freedom",
-      settings: {}
-    },
-    {
-      tag: "block",
-      protocol: "blackhole",
-      settings: {
-        response: {
-          type: "http"
-        }
-      }
-    }
-  ],
+  outbounds: [],
   routing: {
     domainStrategy: "IPIfNonMatch",
     domainMatcher: "hybrid",
@@ -144,123 +129,187 @@ function createOutbound(config) {
 
   switch (protocol) {
     case 'shadowsocks': // Shadowsocks
-      return{
-        tag: "proxy",
-        protocol: config.protocol,
-        settings: {
-          servers: [
-            {
-              address: config.add,
-              port: config.port,
-              method: config.method, // Assuming method exists
-              password: config.uuid,
-              email: "user@example.com",
-              ota: false
+      return [      
+        {
+          tag: "proxy",
+          protocol: config.protocol,
+          settings: {
+            servers: [
+              {
+                address: config.add,
+                port: config.port,
+                method: config.method, // Assuming method exists
+                password: config.uuid,
+                email: "user@example.com",
+                ota: false
+              }
+            ]
+          },
+          streamSettings: {
+              network: config.net || "tcp",
+              tcpSettings: {}
+          },
+          mux: {
+              enabled: false,
+              concurrency: -1
+          }
+        },
+        {
+          tag: "direct",
+          protocol: "freedom",
+          settings: {}
+        },
+        {
+          tag: "block",
+          protocol: "blackhole",
+          settings: {
+            response: {
+              type: "http"
             }
-          ]
-        },
-        streamSettings: {
-            network: config.net || "tcp",
-            tcpSettings: {}
-        },
-        mux: {
-            enabled: false,
-            concurrency: -1
+          }
         }
-      };
+      ]
 
     case 'trojan':
-      return {
-        tag: "proxy",
-        protocol: config.protocol,
-        settings: {
-          servers: [
-            {
-              address: config.add,
-              port: config.port,
-              password: config.uuid,
-              email: "user@example.com"
+      return [
+        {
+          tag: "proxy",
+          protocol: config.protocol,
+          settings: {
+            servers: [
+              {
+                address: config.add,
+                port: config.port,
+                password: config.uuid,
+                email: "user@example.com"
+              }
+            ]
+          },
+          streamSettings: {
+              network: config.net || "tcp",
+              tcpSettings: {
+                  header: {
+                    type: config.type || "none"
+                  }
+              },
+              security: config.scy || "none"
+          },
+          mux: {
+              enabled: false,
+              concurrency: -1
+          }
+        },
+        {
+          tag: "direct",
+          protocol: "freedom",
+          settings: {}
+        },
+        {
+          tag: "block",
+          protocol: "blackhole",
+          settings: {
+            response: {
+              type: "http"
             }
-          ]
-        },
-        streamSettings: {
-            network: config.net || "tcp",
-            tcpSettings: {
-                header: {
-                  type: config.type || "none"
-                }
-            },
-            security: config.scy || "none"
-        },
-        mux: {
-            enabled: false,
-            concurrency: -1
+          }
         }
-      };
+      ]
 
     case 'vmess':
-      return {
-        tag: "proxy",
-        protocol: "vmess",
-        settings: {
-          vnext: [
-            {
-              address: config.add,
-              port: config.port,
-              users: [
-                {
-                  id: config.uuid,
-                  security: config.scy || "none",
-                  email: "user@example.com",
-                  alterId: parseInt(config.aid, 10)
-                }
-              ]
+      return [
+        {
+          tag: "proxy",
+          protocol: "vmess",
+          settings: {
+            vnext: [
+              {
+                address: config.add,
+                port: config.port,
+                users: [
+                  {
+                    id: config.uuid,
+                    security: config.scy || "none",
+                    email: "user@example.com",
+                    alterId: parseInt(config.aid, 10)
+                  }
+                ]
+              }
+            ]
+          },
+          streamSettings: {
+            network: config.net || "tcp",
+            tcpSettings: {
+              header: {
+                type: config.type || "none"
+              }
             }
-          ]
-        },
-        streamSettings: {
-          network: config.net || "tcp",
-          tcpSettings: {
-            header: {
-              type: config.type || "none"
-            }
+          },
+          mux: {
+              enabled: false,
+              concurrency: -1
           }
         },
-        mux: {
-            enabled: false,
-            concurrency: -1
+        {
+          tag: "direct",
+          protocol: "freedom",
+          settings: {}
+        },
+        {
+          tag: "block",
+          protocol: "blackhole",
+          settings: {
+            response: {
+              type: "http"
+            }
+          }
         }
-      };
+      ]
 
     case 'vless':
-      return {
-        tag: "proxy",
-        protocol: config.protocol,
-        settings: {
-          vnext: [
-            {
-              address: config.add,
-              port: config.port,
-              users: [
-                {
-                    id: config.uuid,
-                    encryption: "none",
-                    email: "user@example.com"
-                }
-              ]
+      return [      
+        {
+          tag: "proxy",
+          protocol: config.protocol,
+          settings: {
+            vnext: [
+              {
+                address: config.add,
+                port: config.port,
+                users: [
+                  {
+                      id: config.uuid,
+                      encryption: "none",
+                      email: "user@example.com"
+                  }
+                ]
+              }
+            ]
+          },
+          streamSettings: {
+            network: config.net || "tcp",
+            security: config.scy || "none",
+            tcpSettings: {
+              header: {
+                type: config.type || "none"
+              }
             }
-          ]
+          }
         },
-        streamSettings: {
-          network: config.net || "tcp",
-          security: config.scy || "none",
-          tcpSettings: {
-            header: {
-              type: config.type || "none"
+        {
+          tag: "direct",
+          protocol: "freedom",
+          settings: {}
+        },
+        {
+          tag: "block",
+          protocol: "blackhole",
+          settings: {
+            response: {
+              type: "http"
             }
           }
         }
-      };
+      ]
     default:
       throw new Error("Unsupported Configuration");
   }
@@ -285,7 +334,9 @@ function checkOutbounds(removeOutbound) {
   }
 
   if(removeOutbound) {
+
     config.outbounds = []
+
     fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2), 'utf-8');
   }
 
@@ -294,7 +345,7 @@ function checkOutbounds(removeOutbound) {
 function processConfig(config) {
 
   const outbound = createOutbound(config);
-  configTemplate.outbounds = [outbound]
+  configTemplate.outbounds = outbound
   fs.writeFileSync(configFilePath, JSON.stringify(configTemplate, null, 2), 'utf-8');
 
 }
