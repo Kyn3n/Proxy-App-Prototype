@@ -4,9 +4,18 @@ To run development for app:
 npm install
 npm run dev
 ```
-To build app
+To build app:
+- For Windows
 ```
-npm run build
+npm run dist:win
+```
+- For Mac
+```
+npm run dist:mac
+```
+- For Linux
+```
+npm run dist:linux
 ```
 
 <!-- 1. npm create vite & select your desired variant
